@@ -52,6 +52,78 @@ JSON;
 
     /**
      * @test
+     */
+    public function testValidateResponseWithParameterFor()
+    {
+        $swagger = <<<JSON
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "test",
+        "version": "1.0"
+    },
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/tests/{id}/close/{date}": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Get the list of all the tests cases."
+                    }
+                }
+            }
+        }
+    }
+}
+JSON;
+
+        $prophecy = $this->prophesize(ResponseInterface::class);
+        $prophecy->getStatusCode()->willReturn(200);
+        $prophecy->getHeader('Content-Type')->willReturn(['application/json']);
+        $validator = new SwaggerValidator($this->buildSwagger($swagger));
+        $validator->validateResponseFor($prophecy->reveal(), PathItem::METHOD_GET, '/tests/d14527a0-39fb-42cd-b754-17091d4ae628/close/2019-12-04', 200);
+    }
+
+    /**
+     * @test
+     */
+    public function testValidateResponseWithSwaggerParameterFor()
+    {
+        $swagger = <<<JSON
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "test",
+        "version": "1.0"
+    },
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/tests/{id}/close/{date}": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Get the list of all the tests cases."
+                    }
+                }
+            }
+        }
+    }
+}
+JSON;
+
+        $prophecy = $this->prophesize(ResponseInterface::class);
+        $prophecy->getStatusCode()->willReturn(200);
+        $prophecy->getHeader('Content-Type')->willReturn(['application/json']);
+        $validator = new SwaggerValidator($this->buildSwagger($swagger));
+        $validator->validateResponseFor($prophecy->reveal(), PathItem::METHOD_GET, '/tests/{id}/close/{date}', 200);
+    }
+
+    /**
+     * @test
      * @expectedException \WakeOnWeb\Component\Swagger\Test\Exception\StatusCodeException
      */
     public function testValidateResponseForThrowsAnExceptionWhenTheStatusCodeIsInvalid()
